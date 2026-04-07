@@ -1,0 +1,258 @@
+[
+  {
+    "rule_id": "V-DWG-001",
+    "standard": "IATF16949",
+    "category": "LAYER_NAMING",
+    "entity_types": [
+      "LINE",
+      "ARC",
+      "CIRCLE",
+      "DIMENSION"
+    ],
+    "layer": "DIMENSIONS",
+    "chunk": "All geometric dimensions (lines, arcs, circles, linear and angular dimensions) must reside on the DIMENSIONS layer. Placing dimensional geometry on any other layer (e.g. OBJECT, 0, DEFPOINTS) violates V-DWG-001 and prevents automated extraction. Action: move entity to DIMENSIONS layer and recheck."
+  },
+  {
+    "rule_id": "V-DWG-002",
+    "standard": "IATF16949",
+    "category": "LAYER_NAMING",
+    "entity_types": [
+      "TOLERANCE"
+    ],
+    "layer": "GDT",
+    "chunk": "All GD&T feature control frames (flatness, perpendicularity, true position, cylindricity, runout) must reside on the GDT layer. GD&T on other layers will not be parsed by the validation system. Action: move tolerance entity to GDT layer."
+  },
+  {
+    "rule_id": "V-DWG-003",
+    "standard": "IATF16949",
+    "category": "LAYER_NAMING",
+    "entity_types": [
+      "MTEXT",
+      "TEXT"
+    ],
+    "layer": "TITLEBLOCK",
+    "chunk": "All title block text (part number, revision, material, drawing number, engineer name, approval signature) must be MTEXT or TEXT entities on the TITLEBLOCK layer. Missing or empty fields on any released drawing will cause automatic rejection. Action: populate all TITLEBLOCK MTEXT fields before release."
+  },
+  {
+    "rule_id": "V-DWG-004",
+    "standard": "IATF16949",
+    "category": "REVISION_CONTROL",
+    "entity_types": [
+      "MTEXT"
+    ],
+    "layer": "TITLEBLOCK",
+    "chunk": "Every released drawing must carry a non-empty revision identifier (Rev A, Rev B, etc.) in the title block revision field. Drawings without a revision letter cannot be issued to production. Action: enter revision letter in title block MTEXT revision field."
+  },
+  {
+    "rule_id": "V-DWG-005",
+    "standard": "IATF16949",
+    "category": "MATERIAL_FIELD",
+    "entity_types": [
+      "MTEXT"
+    ],
+    "layer": "TITLEBLOCK",
+    "chunk": "All machined, cast, and moulded part drawings must specify material grade in the TITLEBLOCK material field. Sheet metal drawings using standard stock are exempt. Action: add material specification (e.g. EN8, ADC12, PP-GF30) to the TITLEBLOCK material MTEXT field."
+  },
+  {
+    "rule_id": "V-GDT-001",
+    "standard": "ISO1101",
+    "category": "FLATNESS",
+    "entity_types": [
+      "TOLERANCE"
+    ],
+    "layer": "GDT",
+    "chunk": "Flatness tolerance on sealing or mating surfaces must not exceed 0.05mm for Class A seals (IP67/IP69K). Exceeding this limit risks seal failure, moisture ingress, and ECE lamp homologation failure. Action: reduce flatness tolerance or rework surface to achieve \u00e2\u2030\u00a40.05mm before assembly."
+  },
+  {
+    "rule_id": "V-GDT-002",
+    "standard": "ISO1101",
+    "category": "PERPENDICULARITY",
+    "entity_types": [
+      "TOLERANCE"
+    ],
+    "layer": "GDT",
+    "chunk": "Perpendicularity tolerance on pivot bores and mounting tabs must not exceed 0.04mm (Class 1 fit) or 0.08mm (Class 2 fit). Exceeding this limit causes edge loading on bearings and reflector tilt. Action: rework bore or tab to achieve specified perpendicularity; verify with CMM."
+  },
+  {
+    "rule_id": "V-GDT-003",
+    "standard": "ISO1101",
+    "category": "TRUE_POSITION",
+    "entity_types": [
+      "TOLERANCE"
+    ],
+    "layer": "GDT",
+    "chunk": "True position tolerance on mounting holes for vehicle body panel interfaces must not exceed 0.05mm diameter zone. Exceeding this causes non-interchangeability with mating assembly. Action: recalibrate drilling fixture and verify position with CMM on first-off part."
+  },
+  {
+    "rule_id": "V-ECE-001",
+    "standard": "ECE_R112",
+    "category": "LENS_SEAL",
+    "entity_types": [
+      "LINE",
+      "DIMENSION"
+    ],
+    "layer": "DIMENSIONS",
+    "chunk": "Lens seating lip width on projector headlamp assemblies is a safety-critical dimension per ECE_R112 IP rating requirements. Minimum lip width is 2.3mm; nominal is 2.5mm. Any reduction below 2.3mm causes IP seal failure and loss of lamp homologation. Action: restore lip width to 2.5mm nominal; mark dimension as change-controlled requiring dual sign-off."
+  },
+  {
+    "rule_id": "V-ECE-002",
+    "standard": "ECE_R112",
+    "category": "PROJECTOR_SEATING",
+    "entity_types": [
+      "DIMENSION"
+    ],
+    "layer": "DIMENSIONS",
+    "chunk": "Projector seating depth is an interface-critical dimension linking the housing to the projector optical assembly per ECE_R112. Nominal seating depth must match the current projector supplier specification. Any supplier change that affects lens stack thickness must trigger a housing drawing review. Action: verify seating depth against current projector supplier specification and update drawing if changed."
+  },
+  {
+    "rule_id": "V-ECE-003",
+    "standard": "ECE_R7",
+    "category": "VENT_PORT",
+    "entity_types": [
+      "CIRCLE"
+    ],
+    "layer": "DIMENSIONS",
+    "chunk": "Vent port diameter on rear combination lamp housings must be minimum 4.8mm clear bore per ECE_R7 thermal and fogging test requirements. Obstruction by mould flash or undersized drill causes fogging inside the lamp. Action: relocate vent port minimum 3mm from mould parting line and verify clear bore with pin gauge."
+  },
+  {
+    "rule_id": "V-ECE-004",
+    "standard": "ECE_R7",
+    "category": "LED_ARRAY",
+    "entity_types": [
+      "DIMENSION"
+    ],
+    "layer": "DIMENSIONS",
+    "chunk": "LED array pitch on PCB-mounted lamp arrays must match the approved PCB supplier specification exactly. Any alternate supplier requires engineering sign-off before production. Pitch deviation causes uneven light distribution failing ECE_R7 photometric test. Action: verify LED pitch against approved supplier PCB spec; add incoming inspection check."
+  },
+  {
+    "rule_id": "V-OPT-001",
+    "standard": "ECE_R112",
+    "category": "FOCAL_LENGTH",
+    "entity_types": [
+      "ARC"
+    ],
+    "layer": "DIMENSIONS",
+    "chunk": "Focal length of projector reflector parabola ARC must be within \u00c2\u00b10.5mm of optical design specification. The parabola profile must always be cross-checked against the current revision of the optical design file. Mismatch causes beam focus to miss the bulb filament, failing photometric test. Action: reimport parabola ARC from correct optical design file revision and confirm focal length in FAI report."
+  },
+  {
+    "rule_id": "V-OPT-002",
+    "standard": "ECE_R112",
+    "category": "PROJECTOR_LENS_APERTURE",
+    "entity_types": [
+      "CIRCLE"
+    ],
+    "layer": "DIMENSIONS",
+    "chunk": "Projector lens aperture diameter must be within \u00c2\u00b10.05mm of nominal. Aperture oversize causes light spillage outside the homologated beam pattern. Undersize reduces luminous flux below ECE_R112 minimum. Root cause is typically mould tool wear on the lens aperture feature. Action: inspect mould tool for wear; replace if aperture diameter drifts >0.1mm from nominal."
+  },
+  {
+    "rule_id": "V-MOUlD-001",
+    "standard": "IATF16949",
+    "category": "DRAFT_ANGLE",
+    "entity_types": [
+      "LINE"
+    ],
+    "layer": "DIMENSIONS",
+    "chunk": "All vertical walls on injection-moulded plastic parts must carry minimum 1.5 degrees draft angle per Varroc mould design standard. Draft angles below 1.0 degrees will cause part sticking in the mould tool during ejection. Action: increase wall draft to minimum 1.5 degrees; update drawing and notify tooling team for mould modification."
+  },
+  {
+    "rule_id": "V-MOULD-002",
+    "standard": "IATF16949",
+    "category": "SNAP_FEATURE",
+    "entity_types": [
+      "CIRCLE"
+    ],
+    "layer": "DIMENSIONS",
+    "chunk": "Snap feature diameters on injection-moulded parts must include material shrinkage compensation factor (typically 1.004\u00e2\u20ac\u201c1.008 depending on grade). Using nominal diameter without shrinkage correction results in undersized snap features causing lens retention failure. Action: apply correct shrinkage factor to snap diameter; add snap retention force to DVP test plan."
+  },
+  {
+    "rule_id": "V-MACH-001",
+    "standard": "ISO2768",
+    "category": "BORE_TOLERANCE",
+    "entity_types": [
+      "CIRCLE"
+    ],
+    "layer": "DIMENSIONS",
+    "chunk": "Precision bores (pivot bores, bulb seat bores, oil feed holes) must be machined to ISO2768 fine tolerance class or tighter as specified on the drawing. Thermal expansion of boring bars during long production runs causes bore diameter drift. Action: allow 15-minute boring bar warm-up before production; monitor bore diameter via SPC every 30 minutes."
+  },
+  {
+    "rule_id": "V-MACH-002",
+    "standard": "ISO2768",
+    "category": "HOLE_SPACING",
+    "entity_types": [
+      "DIMENSION"
+    ],
+    "layer": "DIMENSIONS",
+    "chunk": "Mounting hole spacing dimensions must be verified for correct scale after DXF import. DXF import scale errors (e.g. 0.9969 factor) produce systematic spacing errors making parts non-interchangeable with mating body panels. Action: verify drawing scale is exactly 1:1 after every DXF import; add scale verification to drawing release checklist."
+  },
+  {
+    "rule_id": "V-MACH-003",
+    "standard": "ISO2768",
+    "category": "OIL_FEED_HOLE",
+    "entity_types": [
+      "CIRCLE"
+    ],
+    "layer": "DIMENSIONS",
+    "chunk": "Oil feed hole diameter must not fall below the lower tolerance limit under any circumstances. Undersized oil feed holes restrict oil flow to pivot bearings causing seizure. Drill bit wear is the most common root cause. Action: replace oil feed hole drill bit every 50 holes; use go/no-go gauge on every part \u00e2\u20ac\u201d no sampling allowed."
+  },
+  {
+    "rule_id": "V-CMM-001",
+    "standard": "IATF16949",
+    "category": "FIRST_ARTICLE",
+    "entity_types": [
+      "DIMENSION",
+      "TOLERANCE"
+    ],
+    "layer": "DIMENSIONS",
+    "chunk": "First Article Inspection (FAI) report is mandatory for all new part numbers and all drawing revisions affecting functional dimensions. FAI must include all GD&T callouts, all critical dimensions, and all interface dimensions. Action: generate CMM FAI report before first-off batch release; retain report for PPAP submission."
+  },
+  {
+    "rule_id": "V-PROC-001",
+    "standard": "IATF16949",
+    "category": "SUPPLIER_CHANGE",
+    "entity_types": [
+      "DIMENSION"
+    ],
+    "layer": "DIMENSIONS",
+    "chunk": "Any change to a component supplier (PCB, grommet, projector, lens) that affects a drawing dimension requires engineering sign-off before production changeover. Procurement-initiated supplier swaps without engineering review have caused multiple drawing non-conformances. Action: route supplier change requests through engineering drawing review before production approval."
+  },
+  {
+    "rule_id": "V-PROC-002",
+    "standard": "IATF16949",
+    "category": "DRAWING_RELEASE",
+    "entity_types": [
+      "MTEXT"
+    ],
+    "layer": "TITLEBLOCK",
+    "chunk": "No drawing may be released to production without a completed title block including: part number, revision letter, material grade (for machined/moulded parts), drawing number, engineer name, and approval signature. AutoCAD plugin must enforce this check and block release if any mandatory field is empty. Action: complete all mandatory title block fields before initiating drawing release."
+  },
+  {
+    "rule_id": "V-AIS-001",
+    "standard": "AIS012",
+    "category": "LED_POCKET",
+    "entity_types": [
+      "CIRCLE"
+    ],
+    "layer": "DIMENSIONS",
+    "chunk": "LED pocket diameter on two-wheeler lamp housings must conform to AIS012 dimensional requirements for LED module fitment. Oversize pocket prevents secure LED module seating. Root cause is typically injection mould core pin erosion after 800+ cycles. Action: replace core pin every 750 cycles; add LED pocket diameter to in-process SPC chart monitoring every 10th shot."
+  },
+  {
+    "rule_id": "V-VALVE-001",
+    "standard": "ISO2768",
+    "category": "VALVE_CONTACT",
+    "entity_types": [
+      "ARC"
+    ],
+    "layer": "DIMENSIONS",
+    "chunk": "Valve contact pad radius on rocker arm assemblies must be within \u00c2\u00b10.1mm of nominal. Undersized radius causes point contact instead of surface contact, resulting in accelerated pad wear and premature failure. Action: verify grinding wheel radius with radius gauge at every setup; perform CMM check on first-off part before batch release."
+  },
+  {
+    "rule_id": "V-GROMMET-001",
+    "standard": "IATF16949",
+    "category": "GROMMET_CUTOUT",
+    "entity_types": [
+      "LINE"
+    ],
+    "layer": "DIMENSIONS",
+    "chunk": "Wiring grommet cutout dimensions must match the current approved supplier grommet specification exactly. Supplier changes for grommet components must trigger a drawing review to update cutout dimensions. Undersized cutout prevents grommet seating causing water and dust ingress. Action: verify grommet cutout against current supplier specification; update drawing if grommet supplier has changed."
+  }
+]
