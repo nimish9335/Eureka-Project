@@ -1,0 +1,266 @@
+# =============================================================================
+# Varroc Internal Standards — Drawing & Documentation Requirements
+# Standards Knowledge Base — Varroc Engineering
+# =============================================================================
+# These rules are specific to Varroc Engineering's internal drafting standards.
+# They cover layer naming conventions, approved block libraries, mandatory title
+# block fields, and text height standards.
+# =============================================================================
+
+standard: VARROC_INTERNAL
+version: "2024-R2"
+description: >
+  Varroc Engineering internal drawing standards enforce consistent layer naming,
+  block library usage, complete title blocks, and text height compliance
+  across all product drawings released to production.
+
+rules:
+
+  # ── Layer Naming — Dimensions ─────────────────────────────────────────────
+  - id: VAR-LAYER-001
+    name: Dimension Layer Naming
+    defaultSeverity: Major
+    description: >
+      All linear and angular dimensions, leaders, and extension lines must
+      reside on the "DIMS" layer. Using non-standard layer names (e.g.,
+      "dim", "DIMENSION", "0") prevents automated dimension extraction.
+    requiredLayer: DIMS
+    entity_types: [DIMENSION, LEADER, LINE]
+    howToFix: >
+      Select all dimension entities and change their layer property to "DIMS".
+      Use the layer translator tool if migrating from a legacy drawing.
+
+  # ── Layer Naming — Centerlines ────────────────────────────────────────────
+  - id: VAR-LAYER-002
+    name: Centerline Layer Naming
+    defaultSeverity: Major
+    description: >
+      All centerlines (dashed dot pattern) must reside on the "CENTER" layer
+      using Varroc linetype "CENTER2". Using other linetypes or layer names
+      prevents automated axis detection.
+    requiredLayer: CENTER
+    requiredLinetype: CENTER2
+    entity_types: [LINE, ARC]
+    howToFix: >
+      Move all centerline entities to the "CENTER" layer. Assign the CENTER2
+      linetype. Verify linetype scale with the LTSCALE command to ensure
+      correct dash-dot display at drawing scale.
+
+  # ── Layer Naming — Hidden Lines ───────────────────────────────────────────
+  - id: VAR-LAYER-003
+    name: Hidden Line Layer Naming
+    defaultSeverity: Minor
+    description: >
+      Hidden lines representing internal features must reside on the "HIDDEN"
+      layer using linetype "HIDDEN2". Placing hidden lines on other layers
+      or using continuous linetype is a documentation violation.
+    requiredLayer: HIDDEN
+    requiredLinetype: HIDDEN2
+    entity_types: [LINE, ARC]
+    howToFix: >
+      Identify hidden line entities (dashed pattern) and move them to the
+      "HIDDEN" layer with HIDDEN2 linetype applied.
+
+  # ── Layer Naming — Section Lines ──────────────────────────────────────────
+  - id: VAR-LAYER-004
+    name: Section/Hatch Layer Naming
+    defaultSeverity: Minor
+    description: >
+      All section view hatching and section cut indicators must reside on the
+      "SECTION" layer. Placing hatch on the OBJECT layer inflates file size
+      and confuses automated drawing parsing.
+    requiredLayer: SECTION
+    entity_types: [HATCH]
+    howToFix: >
+      Select all hatch objects and change their layer to "SECTION". Delete any
+      duplicate hatch patterns that may have been created on other layers.
+
+  # ── Layer Naming — Border/Title Frame ─────────────────────────────────────
+  - id: VAR-LAYER-005
+    name: Drawing Border Layer Naming
+    defaultSeverity: Major
+    description: >
+      The drawing border and title block frame must reside on the "BORDER"
+      layer. This separates structural framing from geometry and prevents
+      accidental modification of the border during drawing edits.
+    requiredLayer: BORDER
+    entity_types: [LINE, RECTANGLE, BLOCK]
+    howToFix: >
+      Move the border and title frame entities to the "BORDER" layer. Lock
+      the BORDER layer after placement to prevent accidental edits.
+
+  # ── Approved Block Library ────────────────────────────────────────────────
+  - id: VAR-BLOCK-001
+    name: Approved Block Library Usage
+    defaultSeverity: Major
+    description: >
+      All standard symbols, datum flags, GD&T frames, surface finish symbols,
+      and weld symbols must be inserted from the Varroc approved block library
+      (VAR_STD_BLOCKS_v2024). Custom-drawn symbols are not permitted.
+    approvedBlockLibrary: VAR_STD_BLOCKS_v2024
+    approvedBlocks:
+      - VAR_DATUM_FLAG
+      - VAR_GDT_FRAME
+      - VAR_SURFACE_FINISH
+      - VAR_WELD_SYMBOL
+      - VAR_TITLE_BLOCK_A0
+      - VAR_TITLE_BLOCK_A1
+      - VAR_TITLE_BLOCK_A2
+      - VAR_TITLE_BLOCK_A3
+      - VAR_TITLE_BLOCK_A4
+      - VAR_REVISION_TABLE
+      - VAR_NORTH_ARROW
+      - VAR_SCALE_BAR
+    entity_types: [BLOCK, INSERT]
+    layer: BORDER
+    howToFix: >
+      Delete the non-standard symbol and re-insert from the VAR_STD_BLOCKS_v2024
+      library using the DesignCenter (ADCENTER command). Do not explode blocks
+      from the library.
+
+  # ── Title Block — Part Number ─────────────────────────────────────────────
+  - id: VAR-TITLE-001
+    name: Title Block — Part Number Mandatory
+    defaultSeverity: Critical
+    description: >
+      The title block part number field must be populated with a valid Varroc
+      part number in format: VAR-XXXXX-XX (e.g., VAR-12345-01). Empty or
+      placeholder part numbers block drawing release.
+    mandatoryField: part_number
+    partNumberPattern: "^VAR-\\d{5}-\\d{2}$"
+    entity_types: [MTEXT, TEXT, ATTDEF, ATTRIB]
+    layer: TITLEBLOCK
+    howToFix: >
+      Enter the correct Varroc part number in the title block part number
+      attribute. Format must be VAR-XXXXX-XX. Obtain from the PDM system
+      if not yet assigned.
+
+  # ── Title Block — Revision Letter ─────────────────────────────────────────
+  - id: VAR-TITLE-002
+    name: Title Block — Revision Letter Mandatory
+    defaultSeverity: Critical
+    description: >
+      Every drawing released to production must carry a non-empty revision
+      identifier (A, B, C… or 01, 02…). Drawings without a revision indicator
+      cannot be issued to production or PPAP submission.
+    mandatoryField: revision
+    entity_types: [MTEXT, TEXT, ATTDEF, ATTRIB]
+    layer: TITLEBLOCK
+    howToFix: >
+      Enter the revision letter in the title block revision attribute field.
+      First release is typically "A". Coordinate with the change control
+      process for subsequent revisions.
+
+  # ── Title Block — Material Specification ─────────────────────────────────
+  - id: VAR-TITLE-003
+    name: Title Block — Material Specification Mandatory
+    defaultSeverity: Major
+    description: >
+      All machined, cast, and moulded part drawings must specify the material
+      grade in the TITLEBLOCK material field. Examples: EN-GJL-250, S355,
+      AA6061-T6, ADC12, PP-GF30. Sheet metal stock drawings are exempt.
+    mandatoryField: material
+    entity_types: [MTEXT, TEXT, ATTDEF, ATTRIB]
+    layer: TITLEBLOCK
+    howToFix: >
+      Add the material specification to the title block material attribute.
+      Use approved material codes from materials.yaml. For exempted sheet
+      metal drawings, enter "SEE BOM" in the material field.
+
+  # ── Title Block — Engineer Name ────────────────────────────────────────────
+  - id: VAR-TITLE-004
+    name: Title Block — Engineer Name Mandatory
+    defaultSeverity: Major
+    description: >
+      The title block must include the responsible design engineer's full name.
+      Anonymous drawings cannot be released to production. This establishes
+      accountability for the design.
+    mandatoryField: engineer_name
+    entity_types: [MTEXT, TEXT, ATTDEF, ATTRIB]
+    layer: TITLEBLOCK
+    howToFix: >
+      Enter the responsible engineer's full name in the title block drawn-by
+      attribute. This is the engineer who created or last revised the drawing.
+
+  # ── Title Block — Drawing Number ───────────────────────────────────────────
+  - id: VAR-TITLE-005
+    name: Title Block — Drawing Number Mandatory
+    defaultSeverity: Critical
+    description: >
+      Each drawing must have a unique drawing number in the title block. Format:
+      DWG-XXXXX (e.g., DWG-00042). Drawing numbers are assigned by the PDM
+      system and cannot be duplicated.
+    mandatoryField: drawing_number
+    drawingNumberPattern: "^DWG-\\d{5}$"
+    entity_types: [MTEXT, TEXT, ATTDEF, ATTRIB]
+    layer: TITLEBLOCK
+    howToFix: >
+      Enter the PDM-assigned drawing number in the title block drawing number
+      attribute. If no number has been assigned, request one from the PDM
+      administrator before drawing release.
+
+  # ── Title Block — Approval Signature ──────────────────────────────────────
+  - id: VAR-TITLE-006
+    name: Title Block — Approval Signature Mandatory
+    defaultSeverity: Critical
+    description: >
+      No drawing may be released without an approval signature or approval
+      stamp in the title block checked-by or approved-by field. Unsigned
+      drawings are invalid and cannot be issued to suppliers.
+    mandatoryField: approval_signature
+    entity_types: [MTEXT, TEXT, ATTDEF, ATTRIB]
+    layer: TITLEBLOCK
+    howToFix: >
+      Route the drawing for approval using the Varroc drawing release workflow
+      in the PDM system. The approver must sign the drawing before issue.
+
+  # ── Text Height Standard ───────────────────────────────────────────────────
+  - id: VAR-TEXT-001
+    name: Minimum Dimension Text Height
+    defaultSeverity: Minor
+    minTextHeight: 2.5   # mm at drawing scale
+    maxTextHeight: 5.0   # mm at drawing scale
+    description: >
+      Dimension and annotation text height must be between 2.5mm and 5.0mm
+      at drawing scale. Text smaller than 2.5mm is not legible when printed
+      at standard sheet sizes. Text larger than 5.0mm causes overcrowding.
+    entity_types: [MTEXT, TEXT, DIMENSION]
+    layer: DIMS
+    howToFix: >
+      Select all text/dimension entities and set text height via the DIMSTYLE
+      command. Use DIMSCALE to set the overall dimension scale correctly for
+      the drawing scale factor.
+
+  # ── Text Font Standard ─────────────────────────────────────────────────────
+  - id: VAR-TEXT-002
+    name: Approved Text Font
+    defaultSeverity: Minor
+    description: >
+      All drawing text must use the Varroc standard font: "ISOCP" (ISO Computer
+      Print). Using Arial, Times New Roman, or other non-standard fonts reduces
+      readability and causes font substitution issues when opening on other
+      workstations.
+    approvedFonts:
+      - ISOCP
+      - ISOCP2
+      - ISOCT
+    entity_types: [MTEXT, TEXT]
+    layer: NOTES
+    howToFix: >
+      Run the STYLE command and change the active text style font to ISOCP.
+      Use FIND and REPLACE to bulk-update existing text styles in the drawing.
+
+  # ── Layer Count Check ─────────────────────────────────────────────────────
+  - id: VAR-LAYER-006
+    name: No Entities on Layer 0
+    defaultSeverity: Major
+    description: >
+      No drawing geometry (lines, arcs, dimensions, text) should remain on
+      the default Layer 0. Layer 0 is reserved for AutoCAD block definition
+      inheritance. Geometry on Layer 0 cannot be correctly processed by the
+      validation system.
+    forbiddenLayer: "0"
+    entity_types: [LINE, ARC, CIRCLE, DIMENSION, MTEXT, TEXT, TOLERANCE]
+    howToFix: >
+      Select all entities on Layer 0 and move them to the correct layer based
+      on entity type. Use LAYMCH (layer match) to quickly reassign entities.

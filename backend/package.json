@@ -3,7 +3,14 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:verbose": "jest --verbose"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": ["**/tests/**/*.test.js"],
+    "testTimeout": 10000
   },
   "keywords": [],
   "author": "",
@@ -18,5 +25,8 @@
     "js-yaml": "^4.1.1",
     "zeromq": "^6.5.0",
     "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "jest": "^30.3.0"
   }
 }

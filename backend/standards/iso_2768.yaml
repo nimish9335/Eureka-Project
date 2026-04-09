@@ -1,0 +1,263 @@
+# =============================================================================
+# ISO 2768 — General Tolerances (Linear, Angular)
+# Standards Knowledge Base — Varroc Engineering
+# =============================================================================
+# ISO 2768 defines tolerance classes for dimensions not individually toleranced.
+#   fine (f)       — precision machined components
+#   medium (m)     — standard machined components (DEFAULT if unspecified)
+#   coarse (c)     — welded or rough machined components
+#   very-coarse (v)— raw castings, manual fabrication
+# =============================================================================
+
+standard: ISO_2768
+version: "1989"
+description: >
+  ISO 2768 specifies general (default) tolerances for linear and angular
+  dimensions on engineering drawings where individual tolerances are not
+  explicitly stated. It applies to machined and fabricated parts.
+
+rules:
+
+  # ── Declared Tolerance Class Validation ───────────────────────────────────
+  - id: ISO-2768-001
+    name: Declared Tolerance Class Present
+    defaultSeverity: Major
+    description: >
+      Every drawing must declare an ISO 2768 tolerance class in the general
+      tolerance note (e.g., "General tolerances per ISO 2768-m"). Without this
+      declaration, dimensions without individual tolerances are uncontrolled.
+    allowedClasses:
+      - f     # fine
+      - m     # medium
+      - c     # coarse
+      - v     # very-coarse
+    entity_types: [MTEXT, TEXT]
+    layer: NOTES
+    howToFix: >
+      Add a general tolerance note to the drawing notes area:
+      "General tolerances to ISO 2768-m" (use 'm' for standard machined parts).
+      Place on the NOTES layer.
+
+  # ── Linear Tolerance — Fine Class (f) ─────────────────────────────────────
+  - id: ISO-2768-002
+    name: Linear Tolerance — Fine Class (f)
+    defaultSeverity: Critical
+    description: >
+      Linear dimensions under ISO 2768 fine class (f) must comply with these
+      dimensional range tolerances. Used for precision machined parts.
+    toleranceClass: f
+    dimensionRanges:
+      - range: [0.5, 3]
+        tolerance: 0.05   # ±0.05mm
+      - range: [3, 30]
+        tolerance: 0.1    # ±0.10mm
+      - range: [30, 120]
+        tolerance: 0.15   # ±0.15mm
+      - range: [120, 400]
+        tolerance: 0.2    # ±0.20mm
+      - range: [400, 1000]
+        tolerance: 0.3    # ±0.30mm
+      - range: [1000, 2000]
+        tolerance: 0.5    # ±0.50mm
+    entity_types: [DIMENSION]
+    layer: DIMS
+    howToFix: >
+      Verify the machined dimension is within ±tolerance for the applicable
+      range. Adjust process parameters or tooling to bring dimensions in-spec.
+      For dimensions outside the fine class capability, switch to medium class
+      and apply individual tolerances.
+
+  # ── Linear Tolerance — Medium Class (m) DEFAULT ───────────────────────────
+  - id: ISO-2768-003
+    name: Linear Tolerance — Medium Class (m)
+    defaultSeverity: Major
+    description: >
+      Linear dimensions under ISO 2768 medium class (m) — the most common
+      default for standard machined components at Varroc.
+    toleranceClass: m
+    dimensionRanges:
+      - range: [0.5, 3]
+        tolerance: 0.1    # ±0.10mm
+      - range: [3, 30]
+        tolerance: 0.2    # ±0.20mm
+      - range: [30, 120]
+        tolerance: 0.3    # ±0.30mm
+      - range: [120, 400]
+        tolerance: 0.5    # ±0.50mm
+      - range: [400, 1000]
+        tolerance: 0.8    # ±0.80mm
+      - range: [1000, 2000]
+        tolerance: 1.2    # ±1.20mm
+    entity_types: [DIMENSION]
+    layer: DIMS
+    howToFix: >
+      Verify the machined dimension is within ±tolerance for the applicable
+      range. For tighter requirements, specify individual tolerances on the
+      drawing or switch to fine class.
+
+  # ── Linear Tolerance — Coarse Class (c) ──────────────────────────────────
+  - id: ISO-2768-004
+    name: Linear Tolerance — Coarse Class (c)
+    defaultSeverity: Major
+    description: >
+      Coarse class (c) applies to welded, rough machined, or forged components.
+      Dimensions must remain within these wider tolerance bands.
+    toleranceClass: c
+    dimensionRanges:
+      - range: [0.5, 3]
+        tolerance: 0.2    # ±0.20mm
+      - range: [3, 30]
+        tolerance: 0.5    # ±0.50mm
+      - range: [30, 120]
+        tolerance: 0.8    # ±0.80mm
+      - range: [120, 400]
+        tolerance: 1.2    # ±1.20mm
+      - range: [400, 1000]
+        tolerance: 2.0    # ±2.00mm
+      - range: [1000, 2000]
+        tolerance: 3.0    # ±3.00mm
+    entity_types: [DIMENSION]
+    layer: DIMS
+    howToFix: >
+      For welded or rough parts, confirm that the manufacturing process can
+      hold coarse class tolerances. Dimensions outside this band require
+      individual tolerance callouts.
+
+  # ── Linear Tolerance — Very Coarse Class (v) ──────────────────────────────
+  - id: ISO-2768-005
+    name: Linear Tolerance — Very Coarse Class (v)
+    defaultSeverity: Minor
+    description: >
+      Very coarse class (v) applies to raw castings and manual fabrications
+      where high precision is not achievable. Use only where functional
+      requirements allow large variations.
+    toleranceClass: v
+    dimensionRanges:
+      - range: [0.5, 3]
+        tolerance: 0.5    # ±0.50mm
+      - range: [3, 30]
+        tolerance: 1.0    # ±1.00mm
+      - range: [30, 120]
+        tolerance: 1.5    # ±1.50mm
+      - range: [120, 400]
+        tolerance: 2.5    # ±2.50mm
+      - range: [400, 1000]
+        tolerance: 4.0    # ±4.00mm
+      - range: [1000, 2000]
+        tolerance: 6.0    # ±6.00mm
+    entity_types: [DIMENSION]
+    layer: DIMS
+    howToFix: >
+      Very coarse class is rarely appropriate for Varroc automotive parts.
+      Confirm with engineering that large tolerances are acceptable before
+      applying this class.
+
+  # ── Angular Tolerance — Fine Class ────────────────────────────────────────
+  - id: ISO-2768-006
+    name: Angular Tolerance — Fine Class (f)
+    defaultSeverity: Major
+    description: >
+      Angular tolerances under ISO 2768 fine class. Applies to angle dimensions
+      not individually toleranced.
+    toleranceClass: f
+    angularRanges:
+      - range_mm: [0, 10]
+        tolerance_deg: 1.0       # ±1°
+      - range_mm: [10, 50]
+        tolerance_deg: 0.5       # ±0°30'
+      - range_mm: [50, 120]
+        tolerance_deg: 0.333     # ±0°20'
+      - range_mm: [120, 400]
+        tolerance_deg: 0.167     # ±0°10'
+      - range_mm: [400, null]
+        tolerance_deg: 0.083     # ±0°5'
+    entity_types: [DIMENSION]
+    layer: DIMS
+    howToFix: >
+      Verify angular dimensions are within the fine class tolerance for the
+      applicable range. Use angular GD&T callouts for tighter requirements.
+
+  # ── Angular Tolerance — Medium Class ──────────────────────────────────────
+  - id: ISO-2768-007
+    name: Angular Tolerance — Medium Class (m)
+    defaultSeverity: Major
+    description: >
+      Angular tolerances under ISO 2768 medium class — default for most
+      Varroc machined components.
+    toleranceClass: m
+    angularRanges:
+      - range_mm: [0, 10]
+        tolerance_deg: 1.0       # ±1°
+      - range_mm: [10, 50]
+        tolerance_deg: 0.5       # ±0°30'
+      - range_mm: [50, 120]
+        tolerance_deg: 0.333     # ±0°20'
+      - range_mm: [120, 400]
+        tolerance_deg: 0.167     # ±0°10'
+      - range_mm: [400, null]
+        tolerance_deg: 0.083     # ±0°5'
+    entity_types: [DIMENSION]
+    layer: DIMS
+    howToFix: >
+      Verify that angular dimensions comply with medium class. For form-critical
+      angles (seating angles, draft angles), apply individual tolerances.
+
+  # ── Straightness / Flatness General ───────────────────────────────────────
+  - id: ISO-2768-008
+    name: Geometric Tolerance — Straightness and Flatness (Class H)
+    defaultSeverity: Major
+    description: >
+      ISO 2768 Part 2 defines geometric tolerance classes H, K, L for form
+      tolerances not individually specified. Class H is used for Varroc
+      precision parts. Flatness/straightness must be within Class H limits
+      corresponding to the longest edge length.
+    toleranceClass: H
+    geometricRanges:
+      - range: [0, 10]
+        tolerance: 0.02
+      - range: [10, 30]
+        tolerance: 0.05
+      - range: [30, 100]
+        tolerance: 0.1
+      - range: [100, 300]
+        tolerance: 0.2
+      - range: [300, 1000]
+        tolerance: 0.3
+      - range: [1000, 3000]
+        tolerance: 0.4
+    entity_types: [TOLERANCE]
+    layer: GDT
+    howToFix: >
+      If flatness or straightness exceeds Class H limits, add an individual
+      GD&T callout to override the general tolerance. Verify surface with
+      CMM or surface plate measurement.
+
+  # ── Bore Diameter Tolerance Check ─────────────────────────────────────────
+  - id: ISO-2768-009
+    name: Precision Bore — ISO 2768 Fine Class Check
+    defaultSeverity: Major
+    description: >
+      Precision bores (pivot bores, bulb seats, oil feed holes) must comply
+      with ISO 2768 fine class or have individual tolerances. Bore diameter
+      out-of-tolerance causes assembly interference or loose fit.
+    entity_types: [CIRCLE, DIMENSION]
+    layer: DIMS
+    howToFix: >
+      Allow boring bar warm-up (15 min). Measure with calibrated bore gauge.
+      If SPC shows drift, adjust offset before continuing production.
+      Monitor every 30 parts with SPC.
+
+  # ── Hole Spacing Tolerance ────────────────────────────────────────────────
+  - id: ISO-2768-010
+    name: Mounting Hole Spacing — Scale Verification
+    defaultSeverity: Critical
+    description: >
+      Mounting hole spacing must be verified for correct 1:1 scale after DXF
+      import. Scale errors from import (e.g. 0.9969 factor) cause systematic
+      spacing errors making parts non-interchangeable with mating assemblies.
+    entity_types: [DIMENSION]
+    layer: DIMS
+    howToFix: >
+      Verify drawing scale is exactly 1:1 after every DXF import. Add scale
+      verification to the drawing release checklist. Cross-check spacing
+      against the mating part drawing.

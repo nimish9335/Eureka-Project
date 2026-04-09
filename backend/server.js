@@ -1,26 +1,21 @@
 const express = require('express');
 const cors = require('cors');
 const zmq = require('zeromq');
-const fs = require('fs');
-const path = require('path');
-const yaml = require('js-yaml');
 const axios = require('axios');
-const { scoreViolations, buildSeverityIndex } = require('./scoring/riskEngine');
-const { checkDrawing } = require('./rules/ruleChecker');
+const { scoreViolations } = require('./scoring/riskEngine');
+// Day 3: use the new multi-standard rule validator (6 KB YAML files)
+const { checkDrawing, checkDrawingWithTiming } = require('./rules/ruleValidator');
+// Day 3: rulesLoader builds the severity index from the KB itself
+const { getAllRules } = require('./rules/rulesLoader');
 require('dotenv').config();
 
 const ML_URL = process.env.ML_URL || 'http://127.0.0.1:8001';
 
-// ── Load standards severity index from YAML ───────────────────────────────────
-let severityIndex = new Map();
-try {
-  const yamlPath = path.join(__dirname, '..', 'ml', 'data', 'standards_kb.yaml');
-  const yamlData = yaml.load(fs.readFileSync(yamlPath, 'utf8'));
-  severityIndex = buildSeverityIndex(yamlData);
-  console.log(`[riskEngine] Loaded ${severityIndex.size} rule severities from standards_kb.yaml`);
-} catch (err) {
-  console.warn('[riskEngine] Could not load standards_kb.yaml:', err.message);
-}
+// ── Build severity index from the KB (replaces old YAML-path load) ────────────
+const severityIndex = new Map(
+  getAllRules().map(r => [r.id, r.defaultSeverity])
+);
+console.log(`[server] Severity index built: ${severityIndex.size} rules from Standards KB`);
 
 const app = express();
 app.use(cors());
@@ -42,10 +37,22 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-// ── POST /validate — main validation endpoint ─────────────────────────────────
+// ── POST /validate — quick single-entity rule check (no ML, no scoring) ────────
+// Body: { entity: {...} }
+// Returns violations with timing info — useful for Real-Time inline checks.
 app.post('/validate', (req, res) => {
-  // TODO: forward entity to Python ML /anomaly and /lessons, then return results
-  res.json({ status: 'ok', violations: [] });
+  const { entity } = req.body;
+  if (!entity || typeof entity !== 'object') {
+    return res.status(400).json({ error: 'entity object required in body' });
+  }
+  const { violations, timingMs } = checkDrawingWithTiming([entity]);
+  res.json({
+    status: 'ok',
+    violationCount: violations.length,
+    timingMs,
+    // strip _entity reference before sending
+    violations: violations.map(({ _entity, ...v }) => v),
+  });
 });
 
 // ── POST /score — risk score a list of violations ────────────────────────────

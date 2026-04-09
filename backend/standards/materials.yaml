@@ -1,0 +1,321 @@
+# =============================================================================
+# Materials Specification Rules
+# Standards Knowledge Base — Varroc Engineering
+# =============================================================================
+# This file defines:
+#   1. Approved material codes for each material family
+#   2. Mandatory material callout format on drawings
+#   3. Incompatible material combinations (galvanic corrosion, chemical attack)
+#   4. Material substitution rules
+# =============================================================================
+
+standard: MATERIALS
+version: "2024-R3"
+description: >
+  Varroc Engineering materials specification rules govern the selection and
+  documentation of materials on engineering drawings. Only approved material
+  codes may be specified. Material callouts must follow the standardised
+  format. Incompatible material pairings in the same assembly are flagged
+  as Critical violations.
+
+# ── Approved Material Codes ───────────────────────────────────────────────────
+approvedMaterials:
+
+  grey_iron:
+    standard: EN_1561
+    codes:
+      - EN-GJL-150      # Low-strength grey iron — non-structural housings
+      - EN-GJL-200      # General purpose grey iron
+      - EN-GJL-250      # Standard structural grey iron (Varroc default for brackets)
+      - EN-GJL-300      # High-strength grey iron — heavy-duty mounts
+      - EN-GJL-350      # Premium grey iron — critical load-bearing
+
+  ductile_iron:
+    standard: EN_1563
+    codes:
+      - EN-GJS-400-15   # Ductile iron — high ductility
+      - EN-GJS-500-7    # Ductile iron — standard structural
+      - EN-GJS-600-3    # Ductile iron — high strength
+      - EN-GJS-700-2    # Ductile iron — very high strength
+
+  structural_steel:
+    standard: EN_10025
+    codes:
+      - S235JR          # Standard structural steel — non-critical brackets
+      - S275JR          # Intermediate structural steel
+      - S355JR          # High-strength structural steel (Varroc default for steel parts)
+      - S355J2          # High-strength, improved toughness
+      - S420MC          # High-strength forming steel
+
+  engineering_steel:
+    standard: EN_10083
+    codes:
+      - C45             # Medium carbon steel — shafts, pins
+      - C60             # High carbon steel — springs, wear parts
+      - 42CrMo4         # Chromium-molybdenum alloy steel — high-stress parts
+      - 16MnCr5         # Case hardening steel — gears, cams
+      - 100Cr6          # Bearing steel — rolling element bearings
+
+  stainless_steel:
+    standard: EN_10088
+    codes:
+      - 1.4301          # AISI 304 — general corrosion resistance
+      - 1.4307          # AISI 304L — welding grade
+      - 1.4401          # AISI 316 — marine/chemical resistance
+      - 1.4571          # AISI 316Ti — stabilised grade for high temperature
+      - 1.4016          # AISI 430 — ferritic, decorative trim
+
+  aluminium_wrought:
+    standard: EN_573
+    codes:
+      - AA1050-H14      # Pure aluminium — reflectors, electrical bus
+      - AA3003-H14      # Aluminium-manganese — heat shields
+      - AA5052-H32      # Aluminium-magnesium — formed panels
+      - AA6061-T6       # Aluminium-magnesium-silicon — structural (Varroc default)
+      - AA6063-T5       # Extrusion grade — heatsinks
+      - AA7075-T6       # High-strength aerospace grade — racing/performance
+
+  aluminium_cast:
+    standard: EN_1706
+    codes:
+      - EN-AC-46000     # A380 equivalent — general die casting
+      - EN-AC-46100     # ADC12 equivalent — lamp housing die casting (Varroc default)
+      - EN-AC-42100-T6  # A356-T6 — structural castings with heat treatment
+      - EN-AC-43300     # A413 — thin-wall die casting
+
+  plastics_amorphous:
+    standard: ISO_1043
+    codes:
+      - PC               # Polycarbonate — optical lenses (clear)
+      - PC-GF10          # GF-reinforced PC — structural lens frames
+      - ABS              # Acrylonitrile butadiene styrene — interior trim
+      - ABS-GF20         # GF-reinforced ABS — housings
+      - PMMA             # Polymethyl methacrylate (acrylic) — light pipes
+      - SAN              # Styrene acrylonitrile — transparent covers
+      - PVC-U            # Unplasticised PVC — cable conduits
+
+  plastics_semi_crystalline:
+    standard: ISO_1043
+    codes:
+      - PP               # Polypropylene — general housings
+      - PP-GF20          # 20% GF polypropylene — semi-structural
+      - PP-GF30          # 30% GF polypropylene — structural (Varroc default plastic)
+      - PP-TD20          # Talc-filled PP — Class-A surfaces (low sink)
+      - PA6              # Polyamide 6 (nylon 6) — connectors, gears
+      - PA6-GF30         # GF-reinforced PA6 — structural brackets
+      - PA66             # Polyamide 66 — higher temperature connectors
+      - PA66-GF35        # GF-reinforced PA66 — under-hood components
+      - POM              # Polyoxymethylene (acetal) — precision gears, cams
+      - PBT-GF30         # GF-reinforced PBT — electrical connectors
+      - PPS-GF40         # Polyphenylene sulphide — high temperature (LED boards)
+
+  rubber_seals:
+    standard: ISO_1629
+    codes:
+      - EPDM-70          # EPDM 70 Shore A — general weatherseals
+      - EPDM-60          # EPDM 60 Shore A — soft seals, grommets
+      - SILICONE-50      # Silicone rubber — high-temperature seals (>150°C)
+      - NBR-70           # Nitrile rubber — oil-resistant seals
+      - FKM-75           # Fluoroelastomer (Viton) — chemical resistance
+
+rules:
+
+  # ── Material Callout Format ────────────────────────────────────────────────
+  - id: MAT-FORMAT-001
+    name: Material Callout Format — Drawing Note
+    defaultSeverity: Critical
+    description: >
+      Material specification on drawings must follow the Varroc standard
+      callout format: MATERIAL: <code> TO <standard> [TREATMENT]
+      Example: "MATERIAL: AA6061-T6 TO EN 573-3"
+      Example: "MATERIAL: S355JR TO EN 10025-2, ZINC PHOSPHATE + EPOXY PRIMER"
+      Empty or non-standard material callouts on machined/cast/moulded parts
+      block production release.
+    requiredFormat: "^MATERIAL:\\s+\\S+.*TO\\s+\\S+"
+    entity_types: [MTEXT, TEXT]
+    layer: NOTES
+    howToFix: >
+      Rewrite the material note using the standard format:
+      "MATERIAL: <material_code> TO <standard_code>"
+      Add surface treatment after the standard code if applicable.
+      Use only approved material codes from the materials.yaml approved list.
+
+  # ── Approved Material Code Validation ─────────────────────────────────────
+  - id: MAT-CODE-001
+    name: Approved Material Code Usage
+    defaultSeverity: Critical
+    description: >
+      Only Varroc-approved material codes may be specified on drawings.
+      Non-approved codes may refer to equivalent materials from different
+      standards, but equivalence must be formally approved by Materials
+      Engineering before use on production drawings.
+    entity_types: [MTEXT, TEXT]
+    layer: NOTES
+    howToFix: >
+      Replace the non-approved material code with an equivalent from the
+      approved list in materials.yaml. If no approved equivalent exists,
+      submit a Material Approval Request (MAR) to the Materials Engineering
+      team. Obtain written approval before using the new code on drawings.
+
+  # ── Incompatible Material Pairings ────────────────────────────────────────
+  - id: MAT-COMPAT-001
+    name: Galvanic Corrosion — Aluminium and Steel Contact
+    defaultSeverity: Critical
+    description: >
+      Direct contact between aluminium alloys and steel in a wet environment
+      causes galvanic corrosion (aluminium corrodes preferentially). This
+      combination is only acceptable with a barrier coating or insulating
+      gasket. Used extensively in lamp mounting brackets — frequently mis-designed.
+    incompatiblePair:
+      material1: [AA6061-T6, EN-AC-46100, EN-AC-46000, AA6063-T5]
+      material2: [S355JR, S275JR, C45, 42CrMo4]
+    requiredSolution: INSULATING_GASKET_OR_BARRIER_COATING
+    entity_types: [MTEXT, TEXT]
+    layer: NOTES
+    howToFix: >
+      Add an insulating gasket (EPDM-70 or PA66) between the aluminium and
+      steel mating surfaces. Alternatively, apply a barrier coating (anodise
+      the aluminium or apply epoxy primer to the steel).
+      Document the corrosion protection measure in the drawing notes.
+
+  - id: MAT-COMPAT-002
+    name: Galvanic Corrosion — Stainless Steel and Aluminium
+    defaultSeverity: Major
+    description: >
+      Stainless steel (grade 304/316) paired with aluminium alloys creates a
+      moderate galvanic couple. In harsh environments (road salt, tropical
+      humidity), accelerated aluminium corrosion occurs at the interface.
+    incompatiblePair:
+      material1: [1.4301, 1.4401, 1.4307]
+      material2: [AA6061-T6, EN-AC-46100, AA5052-H32]
+    requiredSolution: BARRIER_COATING_REQUIRED_IN_CORROSIVE_ENVIRONMENTS
+    entity_types: [MTEXT, TEXT]
+    layer: NOTES
+    howToFix: >
+      Apply anodic coating to the aluminium mating surface or use a nylon
+      washer at the interface. Add a corrosion protection note to the drawing.
+
+  - id: MAT-COMPAT-003
+    name: Chemical Incompatibility — POM and PA in Fuel/Oil
+    defaultSeverity: Major
+    description: >
+      POM (acetal/Delrin) and PA6/PA66 absorb water at different rates,
+      causing differential dimensional change when both are used in the same
+      precision assembly in a moist or fuel-wetted environment.
+      Avoid this combination in precision-fit assemblies.
+    incompatiblePair:
+      material1: [POM]
+      material2: [PA6, PA66, PA6-GF30, PA66-GF35]
+    requiredSolution: DIMENSIONAL_ANALYSIS_REQUIRED_FOR_WET_ENVIRONMENT
+    entity_types: [MTEXT, TEXT]
+    layer: NOTES
+    howToFix: >
+      Replace one material with a dimensionally stable alternative.
+      Use POM-POM or PA-PA pairs for precision friction fits.
+      If mixed materials are required, perform dimensional analysis over
+      the full moisture absorption range.
+
+  - id: MAT-COMPAT-004
+    name: UV Degradation — Clear PC Without UV Stabiliser
+    defaultSeverity: Critical
+    description: >
+      Clear polycarbonate (PC) lenses used on exterior lamp applications
+      must have UV stabiliser additive or UV hard coating. Unprotected PC
+      yellows and crazes within 12 months of outdoor exposure, causing
+      photometric test failure and customer warranty claims.
+    material: [PC]
+    requiredCondition: UV_STABILISER_OR_UV_HARD_COAT
+    entity_types: [MTEXT, TEXT]
+    layer: NOTES
+    howToFix: >
+      Specify UV-stabilised PC grade (e.g., Makrolon UV) or add UV hard
+      coat specification to the drawing. Add UV weathering test to the
+      DVP (at least 1500 hours per ISO 4892-2). Verify material grade
+      with the plastics supplier's technical data sheet.
+
+  # ── Material Heat Treatment Callout ───────────────────────────────────────
+  - id: MAT-TREAT-001
+    name: Heat Treatment Specification — Completeness
+    defaultSeverity: Major
+    description: >
+      Drawings for heat-treated parts (case hardened, through hardened,
+      nitrided) must specify: (1) hardness requirement (HRC or HV),
+      (2) case depth (for case hardening), (3) treatment area (full part
+      or local zone). Incomplete heat treatment callouts cause process
+      non-conformance at the heat treatment supplier.
+    requiredFields:
+      - hardness_value
+      - hardness_scale  # HRC / HV / HB
+      - treatment_zone  # "FULL SURFACE" or "AS SHOWN"
+    entity_types: [MTEXT, TEXT]
+    layer: NOTES
+    howToFix: >
+      Update the heat treatment note to include hardness value, scale,
+      and treatment zone. Example: "CASE HARDEN 55-60 HRC, CASE DEPTH
+      0.5-0.8mm, AS SHOWN". Reference Varroc heat treatment specification
+      VAR-PROC-HT-001.
+
+  # ── Material Substitution Control ─────────────────────────────────────────
+  - id: MAT-SUB-001
+    name: Material Substitution — Engineering Approval Required
+    defaultSeverity: Critical
+    description: >
+      No material substitution is allowed without formal Engineering Change
+      Order (ECO). Using a "similar" material without approval has caused
+      multiple failures (e.g., ADC12 → A380 substitution caused porosity
+      in sealing areas). Procurement and production are not authorised to
+      approve material substitutions independently.
+    entity_types: [MTEXT, TEXT]
+    layer: NOTES
+    howToFix: >
+      Raise an Engineering Change Order (ECO) for the material substitution.
+      Obtain sign-off from Design Engineering, Quality, and the customer
+      (if PPAP-controlled). Update the drawing and revalidate the PPAP before
+      changing production material.
+
+  # ── RoHS Compliance Marking ───────────────────────────────────────────────
+  - id: MAT-ROHS-001
+    name: RoHS Compliance — Prohibited Substances Declaration
+    defaultSeverity: Major
+    description: >
+      All parts sold into the EU automotive market must comply with RoHS 3
+      (EU 2015/863) and ELV Directive (2000/53/EC). The drawing or
+      accompanying material data sheet must confirm RoHS compliance.
+      Lead (Pb), Mercury (Hg), Cadmium (Cd), Hexavalent Chromium (Cr6+),
+      PBB, PBDE, DEHP, BBP, DBP, DIBP are prohibited above threshold limits.
+    prohibitedSubstances:
+      - Pb  # Lead — threshold 0.1% by weight
+      - Hg  # Mercury — threshold 0.1%
+      - Cd  # Cadmium — threshold 0.01%
+      - Cr6 # Hexavalent Chromium — threshold 0.1%
+      - PBB
+      - PBDE
+      - DEHP
+      - BBP
+      - DBP
+      - DIBP
+    entity_types: [MTEXT, TEXT]
+    layer: NOTES
+    howToFix: >
+      Add RoHS compliance note to the drawing: "MATERIAL AND FINISH COMPLY
+      WITH RoHS 3 (EU 2015/863) AND ELV DIRECTIVE 2000/53/EC".
+      Obtain supplier RoHS declaration before using any new material or
+      surface finish. Avoid hexavalent chromium (Cr6+) plating — use
+      trivalent chrome or zinc-nickel alternatives.
+
+  # ── REACH SVHC Check ──────────────────────────────────────────────────────
+  - id: MAT-REACH-001
+    name: REACH SVHC — Substances of Very High Concern
+    defaultSeverity: Minor
+    description: >
+      Materials containing REACH SVHC above 0.1% by weight must be declared
+      in the material data sheet. Common automotive SVHCs include DEHP
+      (plasticiser in PVC cables), bisphenol-A (epoxy coatings), and certain
+      cobalt compounds. This affects supplier material certification.
+    entity_types: [MTEXT, TEXT]
+    layer: NOTES
+    howToFix: >
+      Obtain full material composition from the material supplier and verify
+      against the current REACH SVHC candidate list. If SVHC is present above
+      0.1%, declare it in the supplier documentation and notify the customer.
+      Seek SVHC-free alternatives where technically feasible.

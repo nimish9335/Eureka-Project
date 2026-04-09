@@ -1,0 +1,205 @@
+# =============================================================================
+# Customer Specifications — Template File
+# Standards Knowledge Base — Varroc Engineering
+# =============================================================================
+# IMPORTANT: This is a TEMPLATE file. In a real project, this file is replaced
+# with the specific customer's requirements per project/program.
+#
+# How to use:
+#   1. Copy this file and rename it: customer_specs_<CUSTOMER_CODE>.yaml
+#      e.g., customer_specs_MARUTI.yaml, customer_specs_HONDA.yaml
+#   2. Replace the placeholder rules with the actual customer requirements
+#   3. Update the rulesLoader.js to load the correct customer file based on
+#      the project ID or customer code in the drawing metadata
+#   4. Keep this template file intact for reference
+# =============================================================================
+
+standard: CUSTOMER_SPECS
+version: "TEMPLATE-v1.0"
+customer: PLACEHOLDER
+description: >
+  Customer-specific engineering requirements that supplement Varroc internal
+  standards and ISO/ASME rules. Each customer (OEM) has unique dimensional
+  tolerances, surface finish requirements, and documentation formats.
+  This template must be replaced with the actual customer specification
+  file before project-specific validation is run.
+
+# ── Current Customer Context (filled in per-project) ─────────────────────────
+context:
+  customer_code: "PLACEHOLDER"              # e.g., MARUTI, HONDA, TATA, BOSCH
+  program_name: "PLACEHOLDER_PROGRAM"       # e.g., SWIFT-2025, CITY-2024
+  customer_drawing_standard: "PLACEHOLDER"  # e.g., MS-100, HES-100, TATA-ENG-001
+  oem_approval_required: true
+  ppap_level: 3                             # 1–5 per AIAG standard
+  revision_date: "2024-01-01"
+
+rules:
+
+  # ── Customer Dimensional Tolerance Override ────────────────────────────────
+  - id: CUST-DIM-001
+    name: Customer Critical Dimension Tolerance
+    defaultSeverity: Critical
+    description: >
+      [TEMPLATE] Customer-specific tolerance override for critical interface
+      dimensions. Replace this placeholder with the actual customer dimension
+      requirements from their engineering specification.
+      Example: Honda requires ±0.03mm on headlamp mounting boss diameters
+      (tighter than ISO 2768-f).
+    placeholderNote: "Replace with actual customer dimension tolerance requirements"
+    # Example fields to populate:
+    # targetDimension: "Mounting boss diameter"
+    # nominalValue: 12.0        # mm
+    # upperTolerance: +0.03     # mm
+    # lowerTolerance: -0.03     # mm
+    # customerReference: "HES-100 Section 4.2.1"
+    entity_types: [DIMENSION, CIRCLE]
+    layer: DIMS
+    howToFix: >
+      Verify that the dimension meets the customer's tolerance requirement.
+      Reference the customer engineering specification for the exact limit.
+      Obtain waiver from customer engineering if dimension cannot be achieved.
+
+  # ── Customer Surface Finish Requirement ───────────────────────────────────
+  - id: CUST-SURF-001
+    name: Customer Surface Finish Specification
+    defaultSeverity: Major
+    description: >
+      [TEMPLATE] Customer-specified surface roughness (Ra) requirements for
+      functional surfaces. Replace with actual customer surface finish values.
+      Example: Maruti requires Ra ≤ 1.6 μm on seating faces for NVH compliance.
+    placeholderNote: "Replace with actual customer surface finish requirements"
+    # Example fields:
+    # surfaceType: "Seating face"
+    # maxRoughness_Ra: 1.6      # μm
+    # customerReference: "MS-100-SF Section 3.1"
+    entity_types: [MTEXT, TEXT, DIMENSION]
+    layer: NOTES
+    howToFix: >
+      Verify surface finish achieves the customer Ra requirement. If current
+      process cannot achieve the required Ra, consult manufacturing engineering
+      for process improvement options.
+
+  # ── Customer Drawing Format Requirement ───────────────────────────────────
+  - id: CUST-FORMAT-001
+    name: Customer Drawing Format Compliance
+    defaultSeverity: Major
+    description: >
+      [TEMPLATE] Some customers require drawings to use their own title block
+      format, drawing number scheme, or layer naming conventions. Replace with
+      actual customer drawing format requirements.
+      Example: Bosch requires all supplier drawings in ISODRAW format with
+      Bosch part number in title block.
+    placeholderNote: "Replace with actual customer drawing format requirements"
+    # Example fields:
+    # requiredTitleBlock: "BOSCH_SUPPLIER_TITLE_BLOCK_v3"
+    # drawingNumberFormat: "^[0-9]{10}$"
+    # requiredLanguage: "EN"
+    entity_types: [BLOCK, INSERT, MTEXT]
+    layer: TITLEBLOCK
+    howToFix: >
+      Update the drawing to comply with the customer's drawing format standard.
+      Download the customer title block template from the supplier portal and
+      insert it into the drawing.
+
+  # ── Customer PPAP Documentation Requirement ────────────────────────────────
+  - id: CUST-PPAP-001
+    name: PPAP Level 3 Documentation Complete
+    defaultSeverity: Critical
+    description: >
+      [TEMPLATE] Customer requires PPAP Level 3 submission before first-off
+      production. All critical dimensions on the drawing must be included in
+      the FAI/CMM report. Drawings released without PPAP completion block
+      production sign-off.
+    placeholderNote: "Replace with actual PPAP level and documentation requirements"
+    ppapLevel: 3
+    requiredDocuments:
+      - Design Records
+      - Engineering Change Documents
+      - Customer Engineering Approval
+      - Design FMEA
+      - Process Flow Diagram
+      - Process FMEA
+      - Control Plan
+      - Measurement System Analysis (MSA) Report
+      - Dimensional Results
+      - Material/Performance Test Results
+      - Initial Sample Inspection Report (ISIR)
+      - Initial Process Study
+      - Qualified Lab Documentation
+      - Appearance Approval Report (AAR)
+      - Sample Production Parts
+      - Master Sample
+      - Checking Aids
+      - Customer Specific Requirements
+      - Part Submission Warrant (PSW)
+    entity_types: [MTEXT, TEXT]
+    layer: TITLEBLOCK
+    howToFix: >
+      Complete all PPAP Level 3 documentation before first-off submission.
+      Use the Varroc PPAP tracking sheet and obtain customer approval on the
+      Part Submission Warrant (PSW) before production release.
+
+  # ── Customer NVH Requirement ───────────────────────────────────────────────
+  - id: CUST-NVH-001
+    name: NVH Compliance — Customer Noise Limits
+    defaultSeverity: Major
+    description: >
+      [TEMPLATE] Customer-specific NVH (Noise, Vibration, Harshness) requirements
+      for lamp assemblies. Replace with actual customer NVH limits.
+      Example: Maruti requires no audible rattle from headlamp assembly during
+      random vibration test (Maruti MS-100 Section 7.3).
+    placeholderNote: "Replace with actual customer NVH requirements"
+    # Example fields:
+    # vibrationTestStandard: "MS-100 Section 7.3"
+    # resonanceFrequencies: [20, 2000]   # Hz range
+    # maxAcceleration: 5.0               # g
+    entity_types: [DIMENSION, MTEXT]
+    layer: NOTES
+    howToFix: >
+      Design assembly features (snap fits, mounting bosses) with sufficient
+      preload to prevent rattle during vibration test. Add vibration test
+      to DVP (Design Verification Plan) before PPAP submission.
+
+  # ── Customer Corrosion Protection Requirement ──────────────────────────────
+  - id: CUST-CORR-001
+    name: Corrosion Protection Specification
+    defaultSeverity: Major
+    description: >
+      [TEMPLATE] Customer-specified corrosion protection requirements for
+      metallic components. Replace with actual customer requirements.
+      Example: Tata requires zinc phosphate + epoxy primer on all steel
+      mounting brackets (Tata ENG-ST-006).
+    placeholderNote: "Replace with actual customer corrosion protection requirements"
+    # Example fields:
+    # requiredFinish: "Zinc phosphate + epoxy primer"
+    # minimumCoatingThickness_um: 15
+    # saltSprayTestHours: 240
+    # customerReference: "Tata ENG-ST-006"
+    entity_types: [MTEXT, TEXT]
+    layer: NOTES
+    howToFix: >
+      Add the required surface treatment callout to the drawing notes.
+      Verify that the supplier is qualified for the specified surface finish
+      process. Add salt spray test to the incoming inspection plan.
+
+  # ── Customer Label/Marking Requirement ────────────────────────────────────
+  - id: CUST-MARK-001
+    name: Part Marking / Label Specification
+    defaultSeverity: Minor
+    description: >
+      [TEMPLATE] Customer-required part marking, labels, or traceability codes.
+      Replace with actual customer marking requirements.
+      Example: Honda requires laser-etched part number on all safety-critical
+      parts for traceability per Honda HES-series requirements.
+    placeholderNote: "Replace with actual customer marking requirements"
+    # Example fields:
+    # markingMethod: "Laser etch"
+    # markingContent: "Part Number + Date Code"
+    # markingLocation: "As shown on drawing"
+    # markingDepth_mm: 0.1
+    entity_types: [MTEXT, TEXT]
+    layer: NOTES
+    howToFix: >
+      Add part marking callout to the drawing as specified. Include marking
+      location, content, method, and size. Verify marking legibility after
+      all post-processing operations.

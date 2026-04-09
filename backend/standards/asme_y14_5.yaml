@@ -1,0 +1,201 @@
+# =============================================================================
+# ASME Y14.5 — Geometric Dimensioning & Tolerancing (GD&T)
+# Standards Knowledge Base — Varroc Engineering
+# =============================================================================
+# Rule fields:
+#   id             : Unique rule identifier
+#   name           : Human-readable rule name
+#   defaultSeverity: Critical | Major | Minor
+#   description    : What the rule checks
+#   howToFix       : Actionable fix guidance
+#   allowedSymbols : (GD&T rules) List of valid GD&T symbols
+#   maxTolerance   : Upper threshold (numeric rules)
+#   entity_types   : Applicable AutoCAD entity types
+#   layer          : Required layer name
+# =============================================================================
+
+standard: ASME_Y14_5
+version: "2018"
+description: >
+  ASME Y14.5-2018 defines the language of GD&T used on engineering drawings.
+  It specifies symbols, datum references, feature control frames, and bonus
+  tolerance rules for geometric tolerances.
+
+rules:
+
+  # ── Allowed GD&T Symbols ──────────────────────────────────────────────────
+  - id: ASME-GDT-001
+    name: Valid GD&T Symbol Usage
+    defaultSeverity: Critical
+    description: >
+      Feature control frames must use only ASME Y14.5-approved GD&T symbols.
+      Invalid or non-standard symbols are not interpretable by manufacturing.
+    allowedSymbols:
+      - flatness
+      - straightness
+      - circularity
+      - cylindricity
+      - profile_of_a_line
+      - profile_of_a_surface
+      - angularity
+      - perpendicularity
+      - parallelism
+      - true_position
+      - concentricity
+      - symmetry
+      - circular_runout
+      - total_runout
+    entity_types: [TOLERANCE, MTEXT, TEXT]
+    layer: GDT
+    howToFix: >
+      Replace the non-standard symbol with the correct ASME Y14.5 symbol from
+      the approved list. Use the CAD GD&T toolbar — do not type symbols manually.
+
+  # ── Datum Reference Format ────────────────────────────────────────────────
+  - id: ASME-GDT-002
+    name: Datum Reference Frame Completeness
+    defaultSeverity: Critical
+    description: >
+      Every positional, orientation, and runout tolerance must reference at
+      least one primary datum. A three-datum scheme (A|B|C) is required for
+      true position per ASME Y14.5 section 4.
+    requiredDatumCount: 1
+    entity_types: [TOLERANCE]
+    layer: GDT
+    howToFix: >
+      Open the feature control frame editor and add the missing datum
+      references. Confirm datum features are identified with datum flags
+      on the drawing before adding references.
+
+  # ── Feature Control Frame Structure ───────────────────────────────────────
+  - id: ASME-GDT-003
+    name: Feature Control Frame Structure
+    defaultSeverity: Major
+    description: >
+      Feature control frames must follow the order: [Symbol][Tolerance][Material
+      Condition][Datum A][Datum B][Datum C]. Any deviation from this order makes
+      the drawing non-interpretable per ASME Y14.5.
+    entity_types: [TOLERANCE]
+    layer: GDT
+    howToFix: >
+      Delete the malformed feature control frame and recreate it using the CAD
+      GD&T dialog box. Never construct feature control frames from raw text.
+
+  # ── Flatness Tolerance Limit (Sealing Surfaces) ───────────────────────────
+  - id: ASME-GDT-004
+    name: Flatness Tolerance — Sealing Surfaces
+    defaultSeverity: Critical
+    maxTolerance: 0.05
+    description: >
+      Flatness tolerance on sealing and mating surfaces must not exceed 0.05mm
+      per ASME Y14.5 and Varroc sealing requirements. Exceeding this causes
+      IP seal failure.
+    entity_types: [TOLERANCE]
+    layer: GDT
+    howToFix: >
+      Reduce the flatness callout to ≤0.05mm. If the process cannot achieve
+      this, escalate to engineering for surface finish review.
+
+  # ── Circularity (Roundness) Tolerance ─────────────────────────────────────
+  - id: ASME-GDT-005
+    name: Circularity Tolerance Limit
+    defaultSeverity: Major
+    maxTolerance: 0.03
+    description: >
+      Circularity (roundness) tolerance must not exceed 0.03mm on precision
+      rotating components (pivot bores, bearing seats). Excess circularity
+      causes vibration and bearing wear.
+    entity_types: [TOLERANCE]
+    layer: GDT
+    howToFix: >
+      Tighten the circularity callout to ≤0.03mm or specify a tighter bore
+      finishing process (e.g., honing instead of reaming).
+
+  # ── Perpendicularity Tolerance ────────────────────────────────────────────
+  - id: ASME-GDT-006
+    name: Perpendicularity Tolerance — Pivot Bores
+    defaultSeverity: Critical
+    maxTolerance: 0.04
+    description: >
+      Perpendicularity on pivot bores and mounting tabs must not exceed 0.04mm
+      (Class 1 fit). Exceeding this causes edge loading on bearings and optical
+      axis tilt in lamp assemblies.
+    entity_types: [TOLERANCE]
+    layer: GDT
+    howToFix: >
+      Rework the bore or tab to achieve ≤0.04mm perpendicularity. Verify with
+      CMM before first-off release.
+
+  # ── True Position Tolerance ───────────────────────────────────────────────
+  - id: ASME-GDT-007
+    name: True Position — Mounting Holes
+    defaultSeverity: Critical
+    maxTolerance: 0.05
+    description: >
+      True position tolerance on mounting holes for vehicle body panel
+      interfaces must not exceed ⌀0.05mm zone per ASME Y14.5 section 7.
+      Exceeding this causes non-interchangeability.
+    entity_types: [TOLERANCE]
+    layer: GDT
+    howToFix: >
+      Recalibrate the drilling fixture and verify position with CMM on the
+      first-off part. Check fixture repeatability (Gauge R&R).
+
+  # ── Bonus Tolerance Rule ──────────────────────────────────────────────────
+  - id: ASME-GDT-008
+    name: Bonus Tolerance — MMC/LMC Modifier
+    defaultSeverity: Minor
+    description: >
+      When MMC (Maximum Material Condition) or LMC (Least Material Condition)
+      modifier is applied, the bonus tolerance must be correctly calculated as
+      the difference between actual mating size and MMC/LMC size.
+    entity_types: [TOLERANCE]
+    layer: GDT
+    howToFix: >
+      Verify that the feature size is measured and the correct bonus tolerance
+      is applied before inspection sign-off. Update the inspection record.
+
+  # ── Cylindricity Tolerance ─────────────────────────────────────────────────
+  - id: ASME-GDT-009
+    name: Cylindricity Tolerance Limit
+    defaultSeverity: Major
+    maxTolerance: 0.05
+    description: >
+      Cylindricity tolerance must not exceed 0.05mm on precision cylindrical
+      surfaces. Cylindricity controls the combined error of circularity,
+      straightness, and taper.
+    entity_types: [TOLERANCE]
+    layer: GDT
+    howToFix: >
+      Specify a grinding or honing operation to achieve ≤0.05mm cylindricity.
+      Add cylindricity to the CMM measurement plan.
+
+  # ── Profile of a Surface ──────────────────────────────────────────────────
+  - id: ASME-GDT-010
+    name: Profile of a Surface — Outer Envelope
+    defaultSeverity: Major
+    maxTolerance: 0.2
+    description: >
+      Profile of a surface tolerance on Class-A exterior surfaces must not
+      exceed 0.2mm bilateral. Larger tolerances produce visible panel gaps
+      at assembly.
+    entity_types: [TOLERANCE]
+    layer: GDT
+    howToFix: >
+      Tighten the surface profile callout. Verify tooling capability with a
+      Gauge R&R study before committing to the tighter tolerance.
+
+  # ── Runout Tolerance ──────────────────────────────────────────────────────
+  - id: ASME-GDT-011
+    name: Total Runout Tolerance
+    defaultSeverity: Major
+    maxTolerance: 0.08
+    description: >
+      Total runout on rotating assemblies (motor shafts, lens mounts) must
+      not exceed 0.08mm. Excessive runout causes vibration and optical
+      misalignment in rotating lamp systems.
+    entity_types: [TOLERANCE]
+    layer: GDT
+    howToFix: >
+      Balance the rotating assembly and verify runout with a runout gauge.
+      Check bearing preload if runout exceeds specification after balancing.

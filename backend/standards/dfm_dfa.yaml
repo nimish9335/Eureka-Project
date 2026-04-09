@@ -1,0 +1,311 @@
+# =============================================================================
+# DFM/DFA Rules — Design for Manufacturability & Design for Assembly
+# Standards Knowledge Base — Varroc Engineering
+# =============================================================================
+# DFM: Checks that the part can be manufactured economically and reliably
+# DFA: Checks that the part can be assembled without interference or access issues
+# =============================================================================
+
+standard: DFM_DFA
+version: "2024-R1"
+description: >
+  DFM (Design for Manufacturability) and DFA (Design for Assembly) rules
+  ensure that parts designed at Varroc can be reliably manufactured and
+  assembled within cost and quality targets. These rules check for
+  geometric and dimensional features that would cause manufacturing
+  problems or assembly difficulties.
+
+rules:
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # DFM RULES — Design for Manufacturability
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  # ── Minimum Wall Thickness ─────────────────────────────────────────────────
+  - id: DFM-001
+    name: Minimum Wall Thickness (Injection Moulding)
+    defaultSeverity: Critical
+    minWallThickness: 1.5   # mm
+    description: >
+      Injection-moulded plastic parts must have minimum wall thickness of
+      1.5mm. Walls thinner than 1.5mm cause incomplete fill (short shot),
+      weld line weakness, and warpage. The absolute minimum is 1.0mm for
+      reinforced materials (GF-filled grades).
+    entity_types: [LINE, DIMENSION]
+    layer: DIMS
+    howToFix: >
+      Increase wall thickness to minimum 1.5mm. If design space is constrained,
+      use a glass-fibre reinforced grade (PP-GF30) to allow 1.2mm walls.
+      Perform mould flow simulation to verify fill before tool manufacture.
+
+  # ── Maximum Aspect Ratio ───────────────────────────────────────────────────
+  - id: DFM-002
+    name: Maximum Feature Aspect Ratio (10:1)
+    defaultSeverity: Major
+    maxAspectRatio: 10.0
+    description: >
+      The aspect ratio (length:diameter or height:width) of any feature must
+      not exceed 10:1. Features with aspect ratio above 10:1 are difficult to
+      machine (tool deflection, vibration, poor surface finish) and prone to
+      breakage in injection moulding (thin core pins snap).
+    entity_types: [LINE, DIMENSION, CIRCLE]
+    layer: DIMS
+    howToFix: >
+      Reduce feature length or increase cross-sectional dimension to bring
+      aspect ratio below 10:1. For deep pockets, use stepped drilling or
+      milling with multiple passes. For thin ribs, increase rib width or
+      split into multiple shorter ribs.
+
+  # ── Draft Angle Requirement ────────────────────────────────────────────────
+  - id: DFM-003
+    name: Minimum Draft Angle — Injection Moulded Walls
+    defaultSeverity: Critical
+    minDraftAngle: 1.5   # degrees
+    description: >
+      All vertical walls on injection-moulded parts must have a minimum draft
+      angle of 1.5 degrees. Walls with less than 1.0 degrees draft cause part
+      sticking during ejection, surface drag marks, and mould tool damage.
+      Textured surfaces require minimum 3.0 degrees draft.
+    entity_types: [LINE, DIMENSION]
+    layer: DIMS
+    howToFix: >
+      Increase wall draft to minimum 1.5 degrees (3.0 degrees for textured
+      surfaces). Update the 3D CAD model, regenerate the drawing, and notify
+      the tooling team for mould modification. Verify with mould flow analysis.
+
+  # ── Minimum Hole-to-Edge Distance ─────────────────────────────────────────
+  - id: DFM-004
+    name: Minimum Hole-to-Edge Distance (2× Diameter)
+    defaultSeverity: Major
+    description: >
+      The distance from any hole centre to the nearest part edge must be at
+      least 2× the hole diameter. Holes too close to edges cause local stress
+      concentration, cracking during assembly, and break-out during drilling.
+    minHoleToEdgeRatio: 2.0   # distance ≥ 2 × hole diameter
+    entity_types: [CIRCLE, DIMENSION]
+    layer: DIMS
+    howToFix: >
+      Move the hole centre away from the edge, or increase the edge wall
+      thickness so the minimum distance is at least 2× the hole diameter.
+      If space is constrained, consider a slotted hole or boss feature.
+
+  # ── Minimum Hole Diameter ──────────────────────────────────────────────────
+  - id: DFM-005
+    name: Minimum Drilled Hole Diameter
+    defaultSeverity: Major
+    minHoleDiameter: 1.0   # mm
+    description: >
+      Drilled holes must be at least 1.0mm diameter. Standard drill bits below
+      1.0mm are fragile and have very high breakage rates in production.
+      Holes below 1.0mm must be laser-drilled or EDM-drilled (added cost).
+    entity_types: [CIRCLE, DIMENSION]
+    layer: DIMS
+    howToFix: >
+      Increase the hole diameter to at least 1.0mm if standard drilling is
+      required. If a smaller hole is technically necessary, specify laser
+      drilling in the drawing notes and coordinate with manufacturing planning.
+
+  # ── Radius at Inside Corners ──────────────────────────────────────────────
+  - id: DFM-006
+    name: Inside Corner Radius — Minimum 0.5mm
+    defaultSeverity: Major
+    minInsideRadius: 0.5   # mm
+    description: >
+      Inside corners on machined parts must have a minimum radius of 0.5mm
+      (matching standard end mill geometry). Sharp inside corners (R=0) are
+      not achievable by milling and cause stress concentration leading to
+      fatigue cracks.
+    entity_types: [ARC, DIMENSION]
+    layer: DIMS
+    howToFix: >
+      Add a fillet radius of at least 0.5mm to all inside corners.
+      Larger radii (1.0–3.0mm) are preferred for heavily loaded areas.
+      Update the CAD model and verify tool access.
+
+  # ── Undercut Detection ─────────────────────────────────────────────────────
+  - id: DFM-007
+    name: Undercut Feature — Requires Side Action
+    defaultSeverity: Major
+    description: >
+      Features that form undercuts in the mould pull direction (cannot be
+      demoulded in the straight draw direction) require side actions (slides)
+      or lifters, which significantly increase tool cost. Each undercut
+      detected adds approximately ₹80,000–₹1,20,000 to tooling cost.
+    entity_types: [LINE, ARC, DIMENSION]
+    layer: DIMS
+    howToFix: >
+      Redesign the feature to eliminate the undercut if possible (e.g., convert
+      internal snap to external snap, add a parting line modification).
+      If undercut is required, document it on the drawing with "SIDE ACTION
+      REQUIRED" note and confirm with tool design.
+
+  # ── Rib-to-Wall Thickness Ratio ────────────────────────────────────────────
+  - id: DFM-008
+    name: Rib Thickness ≤ 60% of Wall Thickness
+    defaultSeverity: Minor
+    maxRibToWallRatio: 0.6
+    description: >
+      Rib thickness must not exceed 60% of the nominal wall thickness.
+      Excessively thick ribs cause sink marks on the opposite surface due to
+      differential cooling shrinkage. This is a cosmetic defect on Class-A
+      surfaces and reduces structural integrity of thin walls.
+    entity_types: [LINE, DIMENSION]
+    layer: DIMS
+    howToFix: >
+      Reduce rib thickness to ≤60% of wall (e.g., if wall = 3.0mm,
+      rib must be ≤1.8mm). Add multiple thin ribs rather than one thick rib
+      for equivalent stiffness without sink marks.
+
+  # ── Gate Location Marking ──────────────────────────────────────────────────
+  - id: DFM-009
+    name: Gate Location Marking on Drawing
+    defaultSeverity: Minor
+    description: >
+      Injection gate locations must be marked on the drawing for all Class-A
+      surface components. Gate location determines where the weld line forms.
+      An unmarked gate location that ends up on a sealing surface or optical
+      surface causes reject parts at first-off.
+    entity_types: [MTEXT, TEXT]
+    layer: NOTES
+    howToFix: >
+      Add gate location marking to the drawing using the VAR_GATE_MARK symbol.
+      Confirm gate location with tooling design at design review stage.
+
+  # ── Thread Engagement Length ───────────────────────────────────────────────
+  - id: DFM-010
+    name: Minimum Thread Engagement Length (1× Diameter)
+    defaultSeverity: Major
+    minEngagementRatio: 1.0   # engagement ≥ 1× thread diameter
+    description: >
+      Threaded bosses must provide a minimum thread engagement length of 1×
+      the thread major diameter. Engagement shorter than 1× diameter causes
+      thread stripping under assembly torque. For plastic bosses,
+      engagement of 2× diameter is recommended.
+    entity_types: [CIRCLE, DIMENSION]
+    layer: DIMS
+    howToFix: >
+      Increase boss depth to achieve minimum 1× (steel) or 2× (plastic)
+      thread diameter engagement. For thin parts, use a helicoil or threaded
+      insert to achieve required engagement.
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # DFA RULES — Design for Assembly
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  # ── Tool Clearance for Fasteners ──────────────────────────────────────────
+  - id: DFA-001
+    name: Assembly Tool Clearance — Fastener Access
+    defaultSeverity: Critical
+    minToolClearance: 15.0   # mm (standard screwdriver/socket clearance envelope)
+    description: >
+      All fasteners (screws, bolts, nuts) must have minimum 15mm clearance
+      around the fastener head for standard torque tools. Insufficient clearance
+      forces the use of angled tools or manual torque — neither achieves
+      specified torque for reliable assembly.
+    entity_types: [CIRCLE, DIMENSION]
+    layer: DIMS
+    howToFix: >
+      Increase the clearance envelope around fastener locations to ≥15mm.
+      If space is constrained, specify a thin-head screw variant or torx drive
+      that requires less clearance. Update assembly instructions accordingly.
+
+  # ── Poka-Yoke (Error-Proofing) Feature ────────────────────────────────────
+  - id: DFA-002
+    name: Poka-Yoke Feature for Asymmetric Parts
+    defaultSeverity: Major
+    description: >
+      Asymmetric parts that can be assembled in multiple orientations must
+      include poka-yoke (error-proofing) features. Parts assembled incorrectly
+      cause warranty failures. Symmetrical parts that appear identical in two
+      orientations but have different functions are highest risk.
+    entity_types: [LINE, CIRCLE, DIMENSION]
+    layer: DIMS
+    howToFix: >
+      Add a keying feature (asymmetric boss, offset hole, chamfer) that
+      physically prevents incorrect assembly. The feature must be visible
+      and distinct enough to guide assembly operators. Document the
+      error-proofing feature in the assembly instructions.
+
+  # ── Minimum Assembly Clearance ────────────────────────────────────────────
+  - id: DFA-003
+    name: Minimum Assembly Clearance Between Parts
+    defaultSeverity: Major
+    minAssemblyClearance: 0.3   # mm (at MMC)
+    description: >
+      Mating parts must have minimum 0.3mm clearance at MMC (Maximum Material
+      Condition). Interference at MMC means parts cannot be assembled without
+      force — leading to surface damage, damaged seals, or cracked housings.
+    entity_types: [DIMENSION, TOLERANCE]
+    layer: DIMS
+    howToFix: >
+      Recalculate the mating dimensions using worst-case (MMC) tolerance
+      stackup. Adjust one or both mating dimensions to achieve ≥0.3mm
+      clearance at MMC. Use the Varroc tolerance stackup spreadsheet.
+
+  # ── Snap Fit Retention Force ──────────────────────────────────────────────
+  - id: DFA-004
+    name: Snap Fit — Minimum and Maximum Retention Force
+    defaultSeverity: Major
+    minRetentionForce: 20    # Newtons
+    maxRetentionForce: 80    # Newtons
+    description: >
+      Snap fit retention force must be between 20N (minimum — part stays
+      assembled in vibration) and 80N (maximum — can be released by service
+      technician without tools). Out-of-range snap forces cause either
+      vibration rattle or service disassembly damage.
+    entity_types: [DIMENSION, ARC]
+    layer: DIMS
+    howToFix: >
+      Adjust snap arm thickness, return angle, or material to achieve 20–80N.
+      Use the snap fit calculation tool to predict force before tooling.
+      Test retention force on 3D-printed or machined prototype before
+      committing to production tooling.
+
+  # ── Alignment Feature ─────────────────────────────────────────────────────
+  - id: DFA-005
+    name: Alignment Feature for Sub-Assembly
+    defaultSeverity: Minor
+    description: >
+      Sub-assemblies with more than 3 mating parts must include at least one
+      locating pin or datum boss to control relative position during assembly.
+      Without alignment features, assembly variation accumulates across parts,
+      causing fit or function failures at final assembly.
+    entity_types: [CIRCLE, LINE, DIMENSION]
+    layer: DIMS
+    howToFix: >
+      Add a locating pin boss (minimum ⌀6mm, protruding 3mm) to the datum
+      part and a matching locating hole in mating parts. Position locating
+      features to constrain all degrees of freedom required for the function.
+
+  # ── Harness Routing Clearance ──────────────────────────────────────────────
+  - id: DFA-006
+    name: Wire Harness Routing Clearance
+    defaultSeverity: Major
+    minHarnessClearance: 10.0   # mm from sharp edges and hot components
+    description: >
+      Wire harness routing paths must have minimum 10mm clearance from sharp
+      edges, hot components (bulbs, LED drivers), and moving parts. Insufficient
+      clearance causes wire chafing leading to short circuits and in-vehicle
+      electrical failures.
+    entity_types: [LINE, DIMENSION]
+    layer: DIMS
+    howToFix: >
+      Add routing clips or guides to maintain ≥10mm clearance. In tight areas,
+      add protective sleeving to the harness and document in the wire harness
+      assembly instructions. Verify clearance in the 3D digital mock-up.
+
+  # ── Part Orientation Marking ──────────────────────────────────────────────
+  - id: DFA-007
+    name: Part Orientation Marking on Drawing
+    defaultSeverity: Minor
+    description: >
+      Drawing views must clearly indicate the "top" or assembly orientation
+      for parts that are not obviously asymmetric. Missing orientation
+      indicators cause assembly defects when operators assemble mirrorred
+      left-hand–right-hand parts interchangeably.
+    entity_types: [MTEXT, TEXT]
+    layer: NOTES
+    howToFix: >
+      Add orientation arrow and "TOP" or "FRONT" label to the drawing.
+      For LH/RH parts, add prominent labels and use different part numbers.
+      Update assembly instructions with photographs showing correct orientation.
